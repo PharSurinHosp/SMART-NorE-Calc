@@ -9,11 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Bai Jamjuree', 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin:0; color: #333; padding-bottom: 30px; -webkit-tap-highlight-color: transparent; font-size: 16px;}
-        .header { background: #1877f2; color: white; padding: 14px 15px; font-weight: bold; font-size: 19px; }
+        .header { background: #1877f2; color: white; padding: 10px 15px; font-weight: bold; font-size: 19px; display: flex; align-items: center; gap: 10px; }
+        .header img.logo { height: 42px; width: 42px; object-fit: contain; flex-shrink: 0; }
+        .lightbox { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.92); z-index: 1000; overflow: auto; text-align: center; padding: 20px 0; }
+        .lightbox img { max-width: 100%; margin: 0 auto; display: block; }
+        .lightbox .close-btn {
+            position: fixed; top: 12px; right: 16px; width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); color: white; font-size: 20px; line-height: 38px; text-align: center;
+            cursor: pointer; z-index: 1001;
+        }
+        .order-hint { font-size: 12px; color: #999; margin-top: 8px; }
+        .order-img { width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: zoom-in; display: block; }
         .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; gap: 6px; padding: 8px 8px 0; }
         .tab {
-            flex: 1; padding: 14px; text-align: center; cursor: pointer; font-weight: bold; color: #666;
-            user-select: none; border-radius: 12px 12px 0 0;
+            flex: 1; padding: 13px 6px; text-align: center; cursor: pointer; font-weight: bold; color: #666;
+            font-size: 14px; user-select: none; border-radius: 12px 12px 0 0;
             transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
             box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
         }
@@ -143,11 +153,15 @@
 </head>
 <body>
 
-    <div class="header">💊 Nor-Epi Calc <span style="font-size:12px; font-weight:normal; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px; margin-left:6px;">สำหรับผู้ใหญ่เท่านั้น (Adult only)</span></div>
+    <div class="header">
+        <img src="logo.png" alt="ตราโรงพยาบาลสุรินทร์" class="logo">
+        <div>Nor-Epi Calc <span style="font-size:12px; font-weight:normal; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px; margin-left:6px;">สำหรับผู้ใหญ่เท่านั้น (Adult only)</span></div>
+    </div>
 
     <div class="tabs">
-        <div class="tab active" id="btn-calc">Norepinephrine Calculation</div>
-        <div class="tab" id="btn-proto">Protocol/Extravasation</div>
+        <div class="tab active" id="btn-calc">คำนวณยา</div>
+        <div class="tab" id="btn-proto">Protocol</div>
+        <div class="tab" id="btn-order">ใบ Order จริง</div>
     </div>
 
     <!-- TAB 1: Calculation -->
@@ -414,24 +428,44 @@
 
     </div>
 
+    <!-- TAB 3: ใบ Order Sheet จริงของโรงพยาบาล (สำหรับอ้างอิง/เทียบกับผลคำนวณ) -->
+    <div id="page-order" class="content">
+        <div class="card" style="text-align:center;">
+            <div style="font-size:14px; font-weight:bold; color:#666; margin-bottom:10px; text-align:left;">📄 Doctor's Order Sheet ต้นฉบับ — Surin Hospital</div>
+            <img src="protocol-sheet.jpg" alt="Doctor's Order Sheet Surin Hospital - Norepinephrine" class="order-img" onclick="openLightbox()">
+            <div class="order-hint">แตะที่รูปเพื่อดูแบบเต็มจอ แล้วใช้นิ้วซูม (pinch) เพื่อดูตัวเลขในตารางให้ชัดขึ้น</div>
+        </div>
+    </div>
+
+    <!-- Lightbox สำหรับดูใบ Order เต็มจอ -->
+    <div class="lightbox" id="lightbox" onclick="if(event.target.id === 'lightbox') closeLightbox()">
+        <div class="close-btn" onclick="closeLightbox()">✕</div>
+        <img src="protocol-sheet.jpg" alt="Doctor's Order Sheet เต็มจอ">
+    </div>
+
     <!-- โค้ดคำนวณ: อัปเดตสูตรให้ตรงกับพฤติกรรมจริงของแอป Glide (มีเพดาน 24 ชม. + ปัดเศษก่อนคำนวณจำนวนขวด) -->
     <script>
+        // แผนที่ tab -> content เพิ่ม tab ใหม่ในอนาคตแค่เพิ่มบรรทัดในนี้ ไม่ต้องแก้ logic
+        var tabMap = { 'btn-calc': 'page-calc', 'btn-proto': 'page-proto', 'btn-order': 'page-order' };
+
         document.addEventListener('click', function(e) {
             var targetId = e.target.id;
-            if (targetId === 'btn-calc' || targetId === 'btn-proto') {
-                document.getElementById('btn-calc').className = 'tab';
-                document.getElementById('btn-proto').className = 'tab';
-                document.getElementById('page-calc').className = 'content';
-                document.getElementById('page-proto').className = 'content';
-                
+            if (tabMap[targetId]) {
+                Object.keys(tabMap).forEach(function(id) {
+                    document.getElementById(id).className = 'tab';
+                    document.getElementById(tabMap[id]).className = 'content';
+                });
                 e.target.className = 'tab active';
-                if (targetId === 'btn-calc') {
-                    document.getElementById('page-calc').className = 'content active';
-                } else {
-                    document.getElementById('page-proto').className = 'content active';
-                }
+                document.getElementById(tabMap[targetId]).className = 'content active';
             }
         });
+
+        function openLightbox() {
+            document.getElementById('lightbox').style.display = 'block';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
 
         function calculate() {
             var weightInput = document.getElementById('inp-weight');
@@ -504,7 +538,7 @@
 
             document.getElementById('out-rate').innerText = rate.toFixed(1);
             document.getElementById('out-max').innerText = maxRate.toFixed(1);
-            document.getElementById('out-amp').innerText = amp.toFixed(2);
+            document.getElementById('out-amp').innerText = amp;
             document.getElementById('out-rate-ref').innerText = rate.toFixed(1);
             document.getElementById('out-maxrate-ref').innerText = maxRate.toFixed(1);
             document.getElementById('out-time-current').innerText = planCurrent.duration.toFixed(1);
