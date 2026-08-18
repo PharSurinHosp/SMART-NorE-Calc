@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nor-Epi Calc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Bai Jamjuree', 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin:0; color: #333; padding-bottom: 30px; -webkit-tap-highlight-color: transparent; font-size: 16px;}
+        .header { background: #1877f2; color: white; padding: 14px 15px; font-weight: bold; font-size: 19px; }
+        .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; gap: 6px; padding: 8px 8px 0; }
+        .tab {
+            flex: 1; padding: 14px; text-align: center; cursor: pointer; font-weight: bold; color: #666;
+            user-select: none; border-radius: 12px 12px 0 0;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+        }
+        .tab:active { transform: translateY(1px); }
+        .tab.active {
+            color: #1877f2; background: #eef4ff;
+            box-shadow: inset 0 3px 0 #1877f2, 0 -2px 6px rgba(24,119,242,0.12);
+        }
+        
+        .content { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+        .content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Tab 1 Cards */
+        .card { background: white; padding: 13px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .alert-box { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; padding: 15px; border-radius: 8px; margin-bottom: 15px; line-height: 1.5;}
+        .info-box { background: #fff8e1; color: #8d6e63; border: 1px solid #ffecb3; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 15px; }
+        
+        label { font-weight: bold; font-size: 15px; display: block; margin-bottom: 8px; }
+        input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 17px; box-sizing: border-box; background: #f9f9f9; }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 12px; }
+        .radio-label {
+            display: flex; align-items: center; padding: 14px 16px;
+            border: 1px solid #e4e4e4; border-radius: 14px; background: white;
+            cursor: pointer; font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+        }
+        .radio-label:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,0,0,0.09); }
+        .radio-label:active { transform: translateY(1px); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .radio-label:has(input:checked) {
+            border-color: #1877f2; background: #f5f9ff;
+            box-shadow: inset 0 2px 5px rgba(24,119,242,0.15), 0 1px 2px rgba(0,0,0,0.04);
+            transform: translateY(1px);
+        }
+        .radio-label input[type="radio"] { margin-right: 10px; transform: scale(1.3); cursor: pointer; }
+        .badge { padding: 4px 9px; border-radius: 6px; color: white; font-size: 12px; font-weight: bold; margin-right: 8px; }
+        .bg-green { background: #4caf50; } .bg-yellow { background: #ffca28; color: black; } .bg-red { background: #f44336; }
+
+        .res-large { font-size: 40px; font-weight: bold; text-align: center; color: black; margin: 10px 0; }
+        .res-box { background: #f8f9fa; border-left: 5px solid #1877f2; padding: 15px; margin-bottom: 10px; border-radius: 0 6px 6px 0; }
+        .res-val { font-size: 22px; font-weight: bold; margin-top: 5px; }
+
+        /* --- สไตล์หน้า Protocol แบบ Glide App --- */
+        .proto-card {
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ccc;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .proto-card summary {
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            list-style: none; /* ซ่อนลูกศรเดิม */
+        }
+        .proto-card summary::-webkit-details-marker { display: none; }
+        .proto-card summary::before {
+            content: "▼"; font-size: 12px; margin-right: 10px; display: inline-block; transition: 0.3s;
+        }
+        .proto-card[open] summary::before { transform: rotate(180deg); }
+        
+        .proto-card .details-content {
+            padding: 0 15px 15px 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .proto-card ul { padding-left: 20px; margin: 0; }
+        .proto-card li { margin-bottom: 8px; }
+
+        /* แยกสีแต่ละหัวข้อ (อิงจากภาพ Glide) */
+        .proto-1 { border-color: #4caf50; background-color: #f1f8e9; }
+        .proto-1 summary { color: #2e7d32; }
+        
+        .proto-2 { border-color: #f44336; background-color: #ffebee; }
+        .proto-2 summary { color: #c62828; }
+        
+        .proto-3 { border-color: #ff9800; background-color: #fff3e0; }
+        .proto-3 summary { color: #e65100; }
+        
+        .proto-4 { border-color: #d84315; background-color: #fbe9e7; }
+        .proto-4 summary { color: #bf360c; }
+        
+        .proto-5 { border-color: #607d8b; background-color: #eceff1; }
+        .proto-5 summary { color: #37474f; }
+        
+        .proto-6 { border-color: #e91e63; background-color: #fce4ec; }
+        .proto-6 summary { color: #880e4f; }
+        
+        .proto-7 { border-color: #9c27b0; background-color: #f3e5f5; }
+        .proto-7 summary { color: #4a148c; }
+        
+        .proto-8 { border-color: #2196f3; background-color: #e3f2fd; }
+        .proto-8 summary { color: #0d47a1; }
+        
+        .proto-9 { border-color: #3f51b5; background-color: #e8eaf6; }
+        .proto-9 summary { color: #1a237e; }
+
+        .proto-10 { border-color: #00897b; background-color: #e0f2f1; }
+        .proto-10 summary { color: #00695c; }
+
+        .ref-footer {
+            background: white; border: 1px solid #ddd; border-radius: 8px;
+            padding: 15px; margin-top: 20px; font-size: 12px; color: #555; line-height: 1.7;
+        }
+        .ref-footer h4 { margin: 0 0 8px 0; font-size: 14px; color: #333; }
+        .ref-footer ol { margin: 0; padding-left: 20px; }
+        .ref-footer .approval-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; font-size: 11px; color: #777; }
+
+        /* ไฮไลต์สีแดงแบบ Pill (ห้ามผสม NSS, หยุดยาทันที ฯลฯ) */
+        .hl-red {
+            background-color: #ffcdd2;
+            color: #b71c1c;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        /* ------------------------------------- */
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: center; background: white;}
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #e3f2fd; color: #1565c0; }
+    </style>
+</head>
+<body>
+
+    <div class="header">💊 Nor-Epi Calc <span style="font-size:12px; font-weight:normal; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px; margin-left:6px;">สำหรับผู้ใหญ่เท่านั้น (Adult only)</span></div>
+
+    <div class="tabs">
+        <div class="tab active" id="btn-calc">Norepinephrine Calculation</div>
+        <div class="tab" id="btn-proto">Protocol/Extravasation</div>
+    </div>
+
+    <!-- TAB 1: Calculation -->
+    <div id="page-calc" class="content active">
+        
+        <div class="alert-box">
+            <strong>🚨 ความเข้มข้น 8:100 และ 4:100</strong><br>ต้องบริหารยาผ่าน Central Line เท่านั้น!
+        </div>
+
+        <div class="info-box">
+            <strong style="color:#f57f17; font-size: 16px;">💧 Preparation & Stability</strong>
+            <ul style="margin-top: 5px;">
+                <li><strong>รูปแบบยา:</strong> Norepinephrine 1 mg/mL, 1 vial = 4 mL (รวม 4 mg/vial)</li>
+                <li><strong>สารน้ำ:</strong> แนะนำผสมใน D5W</li>
+                <li><strong>ความคงตัว:</strong> ยาผสมแล้วอายุ 24 ชม. ที่อุณหภูมิห้อง</li>
+                <li><strong>ข้อสังเกต:</strong> ห้ามใช้หากยาเปลี่ยนสีชมพู, น้ำตาล, ตะกอน</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <label>เลือกความเข้มข้น</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="conc" value="16" data-vol="250" data-amp="1" data-reqamp="4" data-central="0">
+                    <span class="badge bg-green">4:250</span> (4 mg in D5W 246 mL, 16 mcg/mL)
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="conc" value="40" data-vol="100" data-amp="1" data-reqamp="4" data-central="1">
+                    <span class="badge bg-yellow">4:100</span> (4 mg in D5W 96 mL, 40 mcg/mL) <strong>Central Line</strong>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="conc" value="80" data-vol="100" data-amp="2" data-reqamp="8" data-central="1">
+                    <span class="badge bg-red">8:100</span> (8 mg in D5W 92 mL, 80 mcg/mL) <strong>Central Line</strong>
+                </label>
+            </div>
+            <div id="central-warning" style="display:none; margin-top:12px; background:#ffebee; color:#c62828; border:2px solid #c62828; padding:12px; border-radius:8px; font-size:14px; font-weight:bold; text-align:center;">
+                🔒 ต้องบริหารยาผ่าน Central Line เท่านั้น
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="margin-bottom: 15px;">
+                <label for="inp-weight">Body weight (kg)</label>
+                <input type="number" id="inp-weight" min="0" step="0.1" placeholder="เช่น 50">
+            </div>
+            <div>
+                <label for="inp-dose">Dose ที่แพทย์สั่ง (mcg/kg/min)</label>
+                <input type="number" id="inp-dose" min="0" step="0.01" placeholder="เช่น 0.1">
+            </div>
+            <div id="dose-warning" style="display:none; margin-top:12px; background:#ffebee; color:#c62828; border:2px solid #c62828; padding:12px; border-radius:8px; font-size:14px; font-weight:bold; text-align:center;">
+                ⚠️ Max dose : 1 mcg/kg/min *ขนาดยามากกว่านี้ต้องติดตามภาวะ Extravasation อย่างใกล้ชิด*
+            </div>
+        </div>
+
+        <!-- ผลลัพธ์ -->
+        <div class="card">
+            <div style="display:flex; gap:12px;">
+                <div style="flex:1; text-align:center;">
+                    <div style="font-size:14px; font-weight:bold; color:#666;">Rate เริ่มต้น (mL/hr)</div>
+                    <div class="res-large" id="out-rate" style="font-size:34px; color:#1877f2;">0.0</div>
+                    <div style="font-size:11.5px; color:#999;">ตั้งค่าที่เครื่องปั๊มตอนเริ่มให้ยา</div>
+                </div>
+                <div style="flex:1; text-align:center; border-left:1px solid #eee; padding-left:12px;">
+                    <div style="font-size:14px; font-weight:bold; color:#666;">Max Rate (mL/hr)</div>
+                    <div class="res-large" id="out-max" style="font-size:34px; color:#c62828;">0.0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background:#f9f0fc; border: 2px solid #9c27b0;">
+            <div style="font-size:14px; font-weight:bold; color:#6a1b7a;">💉 จำนวน Amp ที่ใช้ผสมต่อ 1 ขวด</div>
+            <div class="res-val" style="color:#6a1b7a; font-size:24px;"><span id="out-amp">0</span> Ampoule</div>
+        </div>
+
+        <div class="card" style="background:#fff8e7; border: 2px solid #f57f17;">
+            <div style="font-size:14px; font-weight:bold; color:#8a5300;">⏱️ ขวดนี้อยู่ได้นานสุดประมาณ</div>
+            <div style="display:flex; gap:14px; margin-top:8px;">
+                <div>
+                    <div style="font-size:11.5px; color:#8a5300;">ถ้าคงอัตราปัจจุบัน (<span id="out-rate-ref">-</span> mL/hr)</div>
+                    <div style="font-size:22px; font-weight:bold; color:#8a5300;"><span id="out-time-current">0.0</span> <span style="font-size:13px; font-weight:normal;">ชม.</span></div>
+                </div>
+                <div style="border-left:1px solid rgba(0,0,0,0.1); padding-left:14px;">
+                    <div style="font-size:11.5px; color:#c62828;">ถ้า titrate ถึงเพดานสูงสุด (<span id="out-maxrate-ref">-</span> mL/hr)</div>
+                    <div style="font-size:22px; font-weight:bold; color:#c62828;"><span id="out-time-max">0.0</span> <span style="font-size:13px; font-weight:normal;">ชม.</span></div>
+                </div>
+            </div>
+            <div style="font-size:12px; color:#8a5300; margin-top:8px; opacity:0.8;">*สูงสุดไม่เกิน 24 ชม. ตามอายุยา ทั้ง 2 ค่า</div>
+        </div>
+
+        <div class="card" style="background:#e3f6f4; border: 2px solid #00897b;">
+            <div style="font-size:14px; font-weight:bold; color:#00594c;">📦 จำนวนยาตลอด 24 ชม. ที่ต้องเตรียม</div>
+            <div style="display:flex; gap:14px; margin-top:8px;">
+                <div>
+                    <div style="font-size:11.5px; color:#00594c;">ถ้าคงอัตราปัจจุบัน</div>
+                    <div style="font-size:22px; font-weight:bold; color:#00594c;"><span id="out-total-current">0</span> <span style="font-size:13px; font-weight:normal;">Amp</span></div>
+                </div>
+                <div style="border-left:1px solid rgba(0,0,0,0.1); padding-left:14px;">
+                    <div style="font-size:11.5px; color:#c62828;">ถ้า titrate ถึงเพดานสูงสุด</div>
+                    <div style="font-size:22px; font-weight:bold; color:#c62828;"><span id="out-total-max">0</span> <span style="font-size:13px; font-weight:normal;">Amp</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background:#e8eaf6; border: 2px dashed #3949ab;">
+            <div style="font-size:14px; font-weight:bold; color:#283593;">📋 จำนวน Amp มาตรฐานที่เบิกต่อรอบ (Requisition)</div>
+            <div class="res-val" style="color:#1a237e; font-size:24px;"><span id="out-reqamp">-</span> Ampoule</div>
+            <div style="font-size:12px; color:#3949ab; margin-top:8px; line-height:1.5;">
+                <strong>ไม่ใช่</strong>จำนวนที่ใช้ผสมต่อ 1 ขวด
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Protocol (อัปเดตสีสันและไฮไลต์เหมือน Glide) -->
+    <div id="page-proto" class="content">
+        
+        <details class="proto-card proto-10" open>
+            <summary>1. การ Titrate และเป้าหมายการรักษา (Titration & Target)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Titrate:</strong> เพิ่มขนาดยาครั้งละ 5 mL/hr ทุก 15 นาที จนกว่าจะถึงเป้าหมาย (หรือตามคำสั่งเฉพาะรายของแพทย์ผู้ดูแล)</li>
+                    <li><strong>Keep SBP:</strong> &gt; 90 mmHg (เป้าหมายเริ่มต้นระหว่าง titrate หากไม่มีคำสั่งเฉพาะ)</li>
+                    <li><strong>Keep MAP:</strong> ตามที่แพทย์สั่งเฉพาะราย โดยทั่วไป ≥ 65 mmHg</li>
+                    <li><strong>ความถี่การวัด BP:</strong> เริ่มให้ยาและทุก 5 นาที จนถึงเป้าหมาย จากนั้นวัดทุก 15 นาที</li>
+                    <li><strong>ตรวจ IV site ทุกครั้ง:</strong> สังเกตอาการบวม แดง บริเวณที่ฉีด <span class="hl-red">หากพบให้เปลี่ยนตำแหน่งที่ให้ยาทันที</span></li>
+                </ul>
+            </div>
+        </details>
+
+        <details class="proto-card proto-1">
+            <summary>2. วิธีผสมยา (Preparation)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><span class="hl-red">ห้ามผสม NSS!</span> ใช้สารละลาย D5W หรือ D5S เท่านั้น</li>
+                    <li><strong>สูตร 4:250 (16 mcg/mL):</strong> ใช้ D5W 250 mL ดูดออก 4 mL เติม Norepinephrine 1 amp (4 mg)</li>
+                    <li><strong>สูตร 4:100 (40 mcg/mL):</strong> ใช้ D5W 96 mL ดูดออก 4 mL เติม Norepinephrine 1 amp (4 mg) (**Central line**)</li>
+                    <li><strong>สูตร 8:100 (80 mcg/mL):</strong> ใช้ D5W 92 mL ดูดออก 8 mL เติม Norepinephrine 2 amp (8 mg) (**Central line**)</li>
+                    <li>ยาที่ผสมแล้วมีอายุ 24 ชั่วโมง หากเปลี่ยนเป็นสีเหลืองเข้มหรือสีชมพู <span class="hl-red">ต้องทิ้งทันที</span></li>
+                </ul>
+            </div>
+        </details>
+
+        <details class="proto-card proto-2">
+            <summary>3. การบริหารยาและความปลอดภัย (Administration & High Alert)</summary>
+            <div class="details-content">
+                <ul>
+                    <li>สูตร 4:100 และ 8:100 ใช้กรณี restrict fluid และต้องให้ทาง <span class="hl-red">Central line เท่านั้น</span></li>
+                    <li><strong>Y-Site Incompatibility:</strong> <span class="hl-red">ห้ามให้ร่วมสาย IV เดียวกันกับเลือด พลาสมา หรือสารละลายด่าง เช่น NaHCO3</span></li>
+                    <li>ห้าม IV push — ต้องเจือจางใน D5W เท่านั้น เพื่อความเข้มข้นของสารละลายคงที่</li>
+                    <li>การหยุดยา: <span class="hl-red">ห้ามหยุดยาทันที</span> เพราะความดันจะตกทันที ให้ค่อยๆ ลดขนาดยา/ลด infusion rate</li>
+                </ul>
+            </div>
+        </details>
+
+        <details class="proto-card proto-3">
+            <summary>4. การติดตามอาการ (Monitoring)</summary>
+            <div class="details-content">
+                <ul>
+                    <li>Monitor EKG ตลอดเวลา และวัด vital sign ทุก 5 นาที จนถึง target แล้วจึงวัดทุก 15 นาที</li>
+                    <li>สังเกตอาการ <span class="hl-red">ปลายมือ/เท้า ซีด เย็น เขียว (Peripheral ischemia)</span></li>
+                </ul>
+            </div>
+        </details>
+
+        <details class="proto-card proto-4">
+            <summary>5. เกณฑ์การรายงานแพทย์ (Notify Physician)</summary>
+            <div class="details-content">
+                <ul>
+                    <li>ความดันโลหิต (BP) ≥ 160/100 mmHg</li>
+                    <li>อัตราการเต้นของหัวใจ (HR) ≥ 120 ครั้ง/นาที</li>
+                    <li>EKG เปลี่ยนแปลง</li>
+                    <li>เกิด Extravasation หรือ Peripheral vasoconstriction — สังเกตจากปลายมือ/เท้าเขียว</li>
+                </ul>
+            </div>
+        </details>
+        
+        <details class="proto-card proto-5">
+            <summary>6. การจัดการเมื่อยารั่วซึม (Extravasation)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><span class="hl-red">หยุดยาทันที!</span> คาเข็มไว้ และใช้ Syringe 5 ml ดูดยาที่ค้างออกให้มากที่สุด</li>
+                    <li>รายงานแพทย์เจ้าของไข้</li>
+                    <li><strong>Antidote:</strong> ใช้ Terbutaline inj. 1 amp เจือจางใน NSS 1-10 ml (ปริมาณขึ้นกับตำแหน่งที่รั่ว) ฉีดเข้าใต้ผิวหนัง (SC) รอบบริเวณที่รั่วให้ทั่ว</li>
+                    <li>ดึงเข็มออก <span class="hl-red">ห้ามใช้แรงกดบริเวณที่เกิดยารั่ว</span></li>
+                    <li><span class="hl-red">ห้ามประคบเย็นเด็ดขาด!</span> ให้ใช้การประคบอุ่น (15 นาที / วันละ 4 ครั้ง) อาจร่วมกับยาสเตียรอยด์อ่อนๆ เช่น Prednisolone cream ตามดุลยพินิจแพทย์</li>
+                    <li>ติดตามอาการปวดและการเกิด Tissue necrosis หากมีอาการปวดมากหรือมี Tissue necrosis/ulcer ต้องแจ้งแพทย์ <span class="hl-red">ควรติดตามอย่างน้อย 48 ชั่วโมง</span></li>
+                    <li>รายงานอุบัติการณ์ตามระบบของโรงพยาบาล</li>
+                </ul>
+                <div style="background:#fff3e0; border-left:4px solid #ff9800; padding:10px; margin-top:10px; border-radius:0 6px 6px 0;">
+                    <strong>Alarm sign:</strong> ปวดชา ปวดร้อนบริเวณประสาทส่วนปลาย ปลายมือ/ปลายเท้าเย็น ซีด เขียว ใจเต้นเร็ว เจ็บหน้าอก ตาพร่ามัว หายใจเหนื่อยหอบ บวมแดงบริเวณที่ฉีด
+                </div>
+                <div style="background:#ffebee; border-left:4px solid #f44336; padding:10px; margin-top:8px; border-radius:0 6px 6px 0;">
+                    <strong>Serious adverse event:</strong> EKG change, Cardiac arrhythmia, Extravasation
+                </div>
+            </div>
+        </details>
+        
+        <details class="proto-card proto-6">
+            <summary>7. ข้อห้ามใช้ (Contraindications)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Hypotension จาก Hypovolemia / Blood loss:</strong> ห้ามใช้ยกเว้นในกรณีฉุกเฉินเพื่อรักษาเลือดไปเลี้ยงสมองและหัวใจชั่วคราว จนกว่าจะให้เลือดหรือสารน้ำทดแทนพอเพียง</li>
+                    <li><strong>หลอดเลือดอุดตัน:</strong> ผู้ป่วยที่มีภาวะ Mesenteric หรือ Peripheral vascular thrombosis ยกเว้นจำเป็นในขั้นตอนการช่วยชีวิต</li>
+                    <li><strong>ยาดมสลบ:</strong> อยู่ในระหว่างการให้ยาสลบด้วย Cyclopropane หรือ Halothane (เสี่ยง Ventricular arrhythmias)</li>
+                </ul>
+            </div>
+        </details>
+        
+        <details class="proto-card proto-7">
+            <summary>8. ข้อควรระวังและอันตรกิริยาระหว่างยา (Warnings & DI)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>การแพ้ยา:</strong> ยามีส่วนประกอบของ Sulfite อาจทำให้แพ้รุนแรงในผู้ป่วยหอบหืด</li>
+                    <li><strong>ความดันสูงรุนแรง:</strong> ระวังการใช้ร่วมกับยา MAOIs หรือ Tricyclic Antidepressants (เช่น Amitriptyline, Nortriptyline, Imipramine)</li>
+                    <li><strong>ผู้ป่วยกลุ่มเสี่ยง:</strong> ผู้สูงอายุ หรือ Occlusive vascular diseases หลีกเลี่ยงให้ยาบริเวณขา</li>
+                    <li><strong>หลีกเลี่ยงใช้ร่วมกับ:</strong> Ergot Derivatives, Inhalational anesthetics, Linezolid</li>
+                    <li><strong>ยาที่เพิ่มฤทธิ์:</strong> Atomoxetine, Cocaine, COMT inhibitors, SNRI, Tricyclic Antidepressants</li>
+                    <li><strong>ยาที่ลดฤทธิ์:</strong> Alpha1-blockers, Clozapine, Spironolactone</li>
+                </ul>
+            </div>
+        </details>
+        
+        <details class="proto-card proto-8">
+            <summary>9. ขนาดยา (Dosage & Administration)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Initial dosing:</strong> 0.01 - 0.5 mcg/kg/min (Max 1 mcg/kg/min) — กรณี Septic shock หรือ Post cardiac arrest shock ให้สูงถึง <strong>3 mcg/kg/min</strong> ได้ (ต้องติดตามภาวะ Extravasation อย่างใกล้ชิดเมื่อเกิน 1 mcg/kg/min)</li>
+                    <li><strong>Cardiac arrest / Acute hypotension:</strong> เริ่มต้น 8-12 mcg/min</li>
+                    <li><strong>Sepsis & Septic shock:</strong> เริ่มต้น 0.01-3.3 mcg/kg/min (Max rate: 30 mcg/min)</li>
+                    <li>ขนาดยาสูงสุดไม่ควรเกิน <strong>20 mcg/min</strong> (แต่ใน refractory shock เพิ่มยาได้จนถึง <strong>30 mcg/min</strong>)</li>
+                </ul>
+            </div>
+        </details>
+        
+        <details class="proto-card proto-9">
+            <summary>10. เภสัชจลนศาสตร์และการตรวจสอบสูตร</summary>
+            <div class="details-content">
+                <table><tr><th>Onset</th><th>Peak effect</th><th>Half-life</th><th>Duration</th></tr><tr><td>ทันที</td><td>ทันที</td><td>2 นาที</td><td>5-10 นาที</td></tr></table>
+                <p style="margin-top:10px;"><strong>Pregnancy category:</strong> C</p>
+            </div>
+        </details>
+
+        <div class="ref-footer">
+            <h4>เอกสารอ้างอิง</h4>
+            <ol>
+                <li>Vallerand A.H, Sanoski C.A, Deglin J.H. Davis's Drug Guide for Nurses. 14th ed. F.A. Davis Company; 2015. p.911-3.</li>
+                <li>American Pharmacists Association. Drug Information Handbook. 25th ed. OH: Lexicomp; 2016-2017. p.1297-8.</li>
+                <li>โรงพยาบาลศิริราช คณะกรรมการควบคุมและดูแลเรื่องยา. คู่มือปฏิบัติงานสำหรับยา High Alert Drugs. ปรับปรุงครั้งที่ 3. กรุงเทพฯ: พฤษภาคม 2557.</li>
+                <li>Klasco RK (Ed): DRUGDEX&reg; System. Truven Health Analytics, Greenwood Village, Colorado (Vol.171 expires 3/2017).</li>
+                <li>Product information: Levophed, Norepinephrine, Indochina Healthcare, Thailand.</li>
+                <li>MICROMEDEX&reg; [Database on the internet]. Colorado: Thomson Reuters (Healthcare); c1974-2020. DRUGDEX&reg; System, Norepinephrine; [cited 2020 Aug 26]. Available from: http://www.micromedexsolutions.com</li>
+                <li>คณะอนุกรรมการความปลอดภัยด้านยา. คู่มือการบริหารยาความเสี่ยงสูง โรงพยาบาลสุรินทร์. ปรับปรุงครั้งที่ 3. สุรินทร์: 2559; Trissel LA. Handbook on Injectable Drugs. 16th ed. American Society of Health-System Pharmacists. Maryland. 2019.</li>
+            </ol>
+            <div class="approval-note">
+                อ้างอิงจากเอกสาร "Norepinephrine 1 mg/ml inj. (LEVOPHED&reg;) ใช้ตาม Standing order" หน้า 94-96
+            </div>
+        </div>
+
+        <div class="ref-footer" style="margin-top:12px;">
+            <strong>เครื่องมือนี้เป็นตัวช่วยคำนวณเท่านั้น ไม่ใช่คำสั่งการรักษา</strong> การสั่งใช้ยาขั้นสุดท้ายต้องเป็นไปตามดุลยพินิจของแพทย์ผู้ดูแล และต้องผ่านการตรวจสอบตามนโยบาย High-Alert Medication ของโรงพยาบาลทุกครั้งก่อนบริหารยาจริง เครื่องมือนี้ประมวลผลบนอุปกรณ์ผู้ใช้เท่านั้น ไม่มีการส่งหรือบันทึกข้อมูลผู้ป่วยไปยังเซิร์ฟเวอร์ภายนอกใดๆ
+            <div class="approval-note">
+                จัดทำ/ทบทวนโดย: ฝ่ายเภสัชกรรม [ระบุชื่อผู้รับผิดชอบ] · ทบทวนล่าสุด: [ระบุวันที่] · ทบทวนครั้งถัดไป: [ระบุวันที่] · เวอร์ชัน 1.0
+            </div>
+        </div>
+
+    </div>
+
+    <!-- โค้ดคำนวณ: อัปเดตสูตรให้ตรงกับพฤติกรรมจริงของแอป Glide (มีเพดาน 24 ชม. + ปัดเศษก่อนคำนวณจำนวนขวด) -->
+    <script>
+        document.addEventListener('click', function(e) {
+            var targetId = e.target.id;
+            if (targetId === 'btn-calc' || targetId === 'btn-proto') {
+                document.getElementById('btn-calc').className = 'tab';
+                document.getElementById('btn-proto').className = 'tab';
+                document.getElementById('page-calc').className = 'content';
+                document.getElementById('page-proto').className = 'content';
+                
+                e.target.className = 'tab active';
+                if (targetId === 'btn-calc') {
+                    document.getElementById('page-calc').className = 'content active';
+                } else {
+                    document.getElementById('page-proto').className = 'content active';
+                }
+            }
+        });
+
+        function calculate() {
+            var weightInput = document.getElementById('inp-weight');
+            var doseInput = document.getElementById('inp-dose');
+
+            var weight = parseFloat(weightInput.value) || 0;
+            var dose = parseFloat(doseInput.value) || 0;
+
+            var radios = document.getElementsByName('conc');
+            var selectedRadio = null;
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedRadio = radios[i];
+                    break;
+                }
+            }
+
+            // จำนวน Amp เบิกมาตรฐานต่อรอบ ขึ้นกับสูตรที่เลือกอย่างเดียว โชว์ได้ทันทีไม่ต้องรอน้ำหนัก/dose
+            document.getElementById('out-reqamp').innerText = selectedRadio ? selectedRadio.getAttribute('data-reqamp') : '-';
+
+            // แจ้งเตือน Central Line ทันทีเมื่อเลือกสูตร 4:100 หรือ 8:100
+            var centralWarning = document.getElementById('central-warning');
+            centralWarning.style.display = (selectedRadio && selectedRadio.getAttribute('data-central') === '1') ? 'block' : 'none';
+
+            // เตือนแบบ dynamic เมื่อ dose เกิน 1 mcg/kg/min — กล่องแดงขึ้นทันที เหมือนกล่องเตือน Central Line
+            var doseWarningBox = document.getElementById('dose-warning');
+            if (dose > 1) {
+                doseInput.style.border = '2px solid #c62828';
+                doseInput.style.background = '#fff5f5';
+                doseWarningBox.style.display = 'block';
+            } else {
+                doseInput.style.border = '1px solid #ccc';
+                doseInput.style.background = '#f9f9f9';
+                doseWarningBox.style.display = 'none';
+            }
+
+            if (!weight || !dose || !selectedRadio) {
+                document.getElementById('out-rate').innerText = "0.0";
+                document.getElementById('out-max').innerText = "0.0";
+                document.getElementById('out-amp').innerText = "0";
+                document.getElementById('out-rate-ref').innerText = "-";
+                document.getElementById('out-maxrate-ref').innerText = "-";
+                document.getElementById('out-time-current').innerText = "0.0";
+                document.getElementById('out-time-max').innerText = "0.0";
+                document.getElementById('out-total-current').innerText = "0";
+                document.getElementById('out-total-max').innerText = "0";
+                return;
+            }
+
+            var conc = parseFloat(selectedRadio.value);
+            var vol = parseFloat(selectedRadio.getAttribute('data-vol'));
+            var amp = parseFloat(selectedRadio.getAttribute('data-amp'));
+
+            var rate = (dose * weight * 60) / conc;
+            // Max Rate ใช้เพดานมาตรฐานของ รพ. (1.0 mcg/kg/min) เสมอ เพื่อวางแผนสต๊อกแบบกันเผื่อ titrate สูงสุด
+            var maxRate = (1.0 * weight * 60) / conc;
+
+            // คำนวณคู่ขนาน 2 แบบ: (1) ถ้าคงอัตราปัจจุบัน (2) ถ้า titrate ถึงเพดานสูงสุด
+            // ทั้งคู่ใช้ตรรกะเดียวกัน: ตัดเพดาน 24 ชม.ตามอายุยา + ปัดเศษ 1 ตำแหน่งก่อนหาจำนวนขวด (ให้ตรงกับ Glide)
+            function bottlePlan(rateUsed) {
+                var durationRaw = vol / rateUsed;
+                var durationCapped = Math.min(durationRaw, 24);
+                var durationRounded = Math.round(durationCapped * 10) / 10;
+                var bagsPer24h = 24 / durationRounded;
+                var totalAmps = Math.ceil(bagsPer24h) * amp;
+                return { duration: durationRounded, totalAmps: totalAmps };
+            }
+            var planCurrent = bottlePlan(rate);
+            var planMax = bottlePlan(maxRate);
+
+            document.getElementById('out-rate').innerText = rate.toFixed(1);
+            document.getElementById('out-max').innerText = maxRate.toFixed(1);
+            document.getElementById('out-amp').innerText = amp.toFixed(2);
+            document.getElementById('out-rate-ref').innerText = rate.toFixed(1);
+            document.getElementById('out-maxrate-ref').innerText = maxRate.toFixed(1);
+            document.getElementById('out-time-current').innerText = planCurrent.duration.toFixed(1);
+            document.getElementById('out-time-max').innerText = planMax.duration.toFixed(1);
+            document.getElementById('out-total-current').innerText = planCurrent.totalAmps;
+            document.getElementById('out-total-max').innerText = planMax.totalAmps;
+        }
+
+        // คำนวณทันทีที่พิมพ์/เลือก แทนการวนเช็คทุก 500ms
+        document.getElementById('inp-weight').addEventListener('input', calculate);
+        document.getElementById('inp-dose').addEventListener('input', calculate);
+        var concRadios = document.getElementsByName('conc');
+        for (var i = 0; i < concRadios.length; i++) {
+            concRadios[i].addEventListener('change', calculate);
+        }
+    </script>
+</body>
+</html>
