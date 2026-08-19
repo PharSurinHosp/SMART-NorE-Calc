@@ -202,11 +202,11 @@
     <div id="page-calc" class="content active">
         
         <div class="alert-box">
-            <strong>🚨 ความเข้มข้น 8:100 และ 4:100</strong><br>ต้องบริหารยาผ่าน Central Line เท่านั้น!
+            <strong>🚨 ความเข้มข้น 8:100 และ 4:100</strong><br>ต้องบริหารยาผ่าน Central Line เท่านั้น
         </div>
 
         <div class="info-box">
-            <strong style="color:#f57f17; font-size: 16px;">💧 Preparation & Stability</strong>
+            <strong style="color:#f57f17; font-size: 16px;">★ Preparation & Stability</strong>
             <ul style="margin-top: 5px;">
                 <li><strong>รูปแบบยา:</strong> Norepinephrine 1 mg/mL, 1 vial = 4 mL (รวม 4 mg/vial)</li>
                 <li><strong>สารน้ำ:</strong> แนะนำผสมใน D5W</li>
@@ -247,7 +247,7 @@
                 <label for="inp-weight">Body weight (kg)</label>
                 <input type="number" id="inp-weight" min="0" step="0.1" placeholder="เช่น 50">
                 <div id="weight-warning" style="display:none; margin-top:12px; background:#fff8e1; color:#8a6100; border:2px solid #f9a825; padding:12px; border-radius:8px; font-size:14px; font-weight:bold; text-align:center;">
-                    💡 BW &gt; 120 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้ IBW หรือ AdjBW แทน Actual Body Weight หากเกรงว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น
+                    💡 BW &gt; 100 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้น้ำหนักสุงสุดที่ 100 Kg หรือพิจารณา Non-weight-base (mcg/min) แทนหากพิจารณาว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น 
                 </div>
             </div>
             <div>
@@ -295,7 +295,7 @@
         </div>
 
         <div class="card" style="background:#e3f6f4; border: 2px solid #00897b;">
-            <div style="font-size:14px; font-weight:bold; color:#00594c;">📦 จำนวนยาตลอด 24 ชม. ที่ต้องเตรียม</div>
+            <div style="font-size:14px; font-weight:bold; color:#00594c;">✎ จำนวนยาตลอด 24 ชม. ที่ต้องเตรียม</div>
             <div style="display:flex; gap:14px; margin-top:8px;">
                 <div>
                     <div style="font-size:11.5px; color:#00594c;">ถ้าคงอัตราปัจจุบัน</div>
@@ -308,7 +308,7 @@
             </div>
         </div>
 
-        <button id="btn-summary" onclick="openSummary()" disabled>✅ ตกลง - สรุปคำสั่งยา</button>
+        <button id="btn-summary" onclick="openSummary()" disabled>💾 ตกลง - สรุปคำสั่งยา</button>
     </div>
 
     <!-- TAB 2: Protocol (อัปเดตสีสันและไฮไลต์เหมือน Glide) -->
@@ -468,7 +468,7 @@
     <!-- TAB 3: ใบ Order Sheet จริงของโรงพยาบาล (สำหรับอ้างอิง/เทียบกับผลคำนวณ) -->
     <div id="page-order" class="content">
         <div class="card" style="text-align:center;">
-            <div style="font-size:14px; font-weight:bold; color:#666; margin-bottom:10px; text-align:left;">📄 Doctor's Order Sheet ต้นฉบับ — Surin Hospital</div>
+            <div style="font-size:14px; font-weight:bold; color:#666; margin-bottom:10px; text-align:left;">🗐 Doctor's Order Sheet ต้นฉบับ — Surin Hospital</div>
             <img src="protocol-sheet.jpg" alt="Doctor's Order Sheet Surin Hospital - Norepinephrine" class="order-img" onclick="openLightbox()">
             <div class="order-hint">แตะที่รูปเพื่อดูแบบเต็มจอ แล้วใช้นิ้วซูม (pinch) เพื่อดูตัวเลขในตารางให้ชัดขึ้น</div>
         </div>
@@ -513,7 +513,7 @@
                 </div>
                 <div id="sum-central-warning" class="summary-warning">🔒 ต้องบริหารยาผ่าน Central Line เท่านั้น</div>
                 <div id="sum-dose-warning" class="summary-warning">⚠️ Max dose : 1 mcg/kg/min *ขนาดยามากกว่านี้ต้องติดตามภาวะ Extravasation อย่างใกล้ชิด*</div>
-                <div id="sum-weight-warning" class="summary-warning" style="background:#fff8e1; color:#8a6100; border-color:#f9a825;">💡 BW &gt; 120 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้ IBW หรือ AdjBW แทน Actual Body Weight หากเกรงว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น</div>
+                <div id="sum-weight-warning" class="summary-warning" style="background:#fff8e1; color:#8a6100; border-color:#f9a825;">★ BW &gt; 100 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้ IBW หรือ AdjBW แทน Actual Body Weight หากเกรงว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น</div>
                 <div>
                     <div class="summary-row-label">วิธีเตรียม/ผสมยา</div>
                     <div id="sum-prep" style="font-size:14px; color:#333; line-height:1.5;">-</div>
@@ -613,9 +613,9 @@
                 doseWarningBox.style.display = 'none';
             }
 
-            // เตือนแบบ dynamic เมื่อ BW > 120 kg — เป็นข้อพิจารณา (advisory) ไม่ใช่การบังคับเปลี่ยนน้ำหนักที่ใช้คำนวณ
+            // เตือนแบบ dynamic เมื่อ BW > 100 kg — เป็นข้อพิจารณา (advisory) ไม่ใช่การบังคับเปลี่ยนน้ำหนักที่ใช้คำนวณ
             var weightWarningBox = document.getElementById('weight-warning');
-            if (weight > 120) {
+            if (weight > 100) {
                 weightInput.style.border = '2px solid #f9a825';
                 weightInput.style.background = '#fffcf0';
                 weightWarningBox.style.display = 'block';
