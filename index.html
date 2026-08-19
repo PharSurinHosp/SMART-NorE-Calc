@@ -194,15 +194,15 @@
 
     <div class="tabs">
         <div class="tab active" id="btn-calc">คำนวณยา</div>
-        <div class="tab" id="btn-proto">Protocol</div>
-        <div class="tab" id="btn-order">ใบ Order จริง</div>
+        <div class="tab" id="btn-proto">Protocol/ข้อมูล</div>
+        <div class="tab" id="btn-order">ใบ Standing order</div>
     </div>
 
     <!-- TAB 1: Calculation -->
     <div id="page-calc" class="content active">
         
         <div class="alert-box">
-            <strong>🚨 ความเข้มข้น 8:100 และ 4:100</strong><br>ต้องบริหารยาผ่าน Central Line เท่านั้น
+            <strong>⬩➤ ความเข้มข้น 8:100 และ 4:100</strong><br>ต้องบริหารยาผ่าน Central Line เท่านั้น
         </div>
 
         <div class="info-box">
@@ -247,7 +247,7 @@
                 <label for="inp-weight">Body weight (kg)</label>
                 <input type="number" id="inp-weight" min="0" step="0.1" placeholder="เช่น 50">
                 <div id="weight-warning" style="display:none; margin-top:12px; background:#fff8e1; color:#8a6100; border:2px solid #f9a825; padding:12px; border-radius:8px; font-size:14px; font-weight:bold; text-align:center;">
-                    💡 BW &gt; 100 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้น้ำหนักสุงสุดที่ 100 Kg หรือพิจารณา Non-weight-base (mcg/min) แทนหากพิจารณาว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น 
+                    ★ BW &gt; 100 Kg : <span class="hl-amber">อาจพิจารณา</span>ใช้น้ำหนักสุงสุดที่ 100 Kg หรือพิจารณา Non-weight-base (mcg/min) แทนหากพิจารณาว่าการให้ยาตามน้ำหนักจริงจะทำให้ได้รับยาปริมาณสูงเกินความจำเป็น 
                 </div>
             </div>
             <div>
@@ -275,12 +275,12 @@
         </div>
 
         <div class="card" style="background:#f9f0fc; border: 2px solid #9c27b0;">
-            <div style="font-size:14px; font-weight:bold; color:#6a1b7a;">💉 จำนวน Amp ที่ใช้ผสมต่อ 1 ขวด</div>
+            <div style="font-size:14px; font-weight:bold; color:#6a1b7a;">⭐ จำนวน Amp ที่ใช้ผสมต่อ 1 ขวด</div>
             <div class="res-val" style="color:#6a1b7a; font-size:24px;"><span id="out-amp">0</span> Ampoule</div>
         </div>
 
         <div class="card" style="background:#fff8e7; border: 2px solid #f57f17;">
-            <div style="font-size:14px; font-weight:bold; color:#8a5300;">⏱️ ขวดนี้อยู่ได้นานสุดประมาณ</div>
+            <div style="font-size:14px; font-weight:bold; color:#8a5300;">⭐ ขวดนี้อยู่ได้นานสุดประมาณ</div>
             <div style="display:flex; gap:14px; margin-top:8px;">
                 <div>
                     <div style="font-size:11.5px; color:#8a5300;">ถ้าคงอัตราปัจจุบัน (<span id="out-rate-ref">-</span> mL/hr)</div>
